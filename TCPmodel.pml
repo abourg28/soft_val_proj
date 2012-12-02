@@ -20,14 +20,28 @@ proctype client(int x) {
   SYN_SENT:
   printf("CLIENT: SYN_SENT\n");
   toClient?SYN_ACK;
-  assert(Ack == x + 1);
-  Ack = Seq + 1;
-  Seq = Ack;
-  toServer!SYN_ACK;
-  goto SYN_RCVD;
+  if
+  :: (Ack == x + 1) ->
+    /* The right Ack was received */
+    printf("CLIENT: Received correct packet\n");
+    Ack = Seq + 1;
+    Seq = Ack;
+    toServer!SYN;
+    goto ESTABLISHED_CONNECTION;
+  :: else ->
+    /* The wrong Ack was received */
+    printf("CLIENT: Received incorrect packet\n");
+    goto SYN_RCVD;
+  fi;
 
   SYN_RCVD:
   printf("CLIENT: SYN RECEIVED\n");
+  Seq = x;
+  toServer!SYN;
+  goto SYN_SENT;
+
+  ESTABLISHED_CONNECTION:
+  printf("CLIENT: ESTABLISHED CONNECTION\n");
 
   FINISHED:
   printf("CLIENT: FINISHED\n");
@@ -39,6 +53,7 @@ proctype server(int y) {
   printf("SERVER: CLOSED\n");
   if
   :: /* listen */
+    toServer?SYN;
     goto LISTEN;
   :: /* do nothing */
     goto CLOSED;
@@ -46,14 +61,34 @@ proctype server(int y) {
 
   LISTEN:
   printf("SERVER: LISTEN\n");
-  toServer?SYN;
-  Ack = Seq + 1;
-  Seq = y;
-  toClient!SYN_ACK;
-  goto SYN_RCVD;
+  if
+  :: /* Send correct packet */
+    printf("SERVER: Sending correct packet\n");
+    Ack = Seq + 1;
+    Seq = y;
+    toClient!SYN_ACK;
+    goto SYN_RCVD;
+  :: /* Send incorrect packet */
+    printf("SERVER: Sending incorrect packet\n");
+    Ack = Seq + 11;
+    Seq = y;
+    toClient!SYN_ACK;
+    goto SYN_RCVD;
+  fi;
 
   SYN_RCVD:
   printf("SERVER: SYN RECEIVED\n");
+  toServer?SYN;
+  if
+  :: (Ack == y + 1) ->
+    goto CONNECTION_ESTABLISHED;
+  :: else ->
+    /* Client reset */
+    goto LISTEN;
+  fi;
+
+  CONNECTION_ESTABLISHED:
+  printf("SERVER: CONNECTION ESTABLISHED\n");
 
   FINISHED:
   printf("SERVER: FINISHED\n");
