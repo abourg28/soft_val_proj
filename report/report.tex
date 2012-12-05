@@ -58,7 +58,27 @@ I don't think we did.
 TODO List of Immediate and LTL Assertions and Descriptions. For each assertion you incorporate, it must be accompanied by a description of what you are trying to verify. E.g., what behaviour of the TCP / retransmission mechanism you are trying to check the correctness?
 \\
 
-Immediate assertions were added in multiple places to assert that there are no unwanted signals.
+Immediate assertions were added in multiple places to assert that there are no unwanted signals. Here is the list of immediate assertions:
+\\
+
+IMM\_1:\\
+Description:\\
+This assertion makes sure that when a \textit{proctype} has sent data it should receive either an \verb|ACK| or \verb|TIMEOUT| signal from the other.
+\\
+
+IMM\_2:\\
+Description:\\
+This assertion makes sure that when a \textit{proctype} is in the data transmission state, it only receives the following signals from the other: \verb|SEND|, \verb|FIN|, and \verb|IDLE|.
+
+IMM\_3:\\
+Description:\\
+This assertion makes sure that when a \textit{proctype} is in the data transmission state, it does not break out of the \verb|do| loop.
+
+IMM\_4:\\
+Description:\\
+This assertion makes sure that when a \textit{proctype} is in the \verb|FIN WAIT 1| state it should only receive a \verb|FIN| or \verb|ACK| signal from the other.
+
+LTL assertions were created for ensuring the behaviour as depicted in the given Finite State Machine. The never claim of each LTL assertion was copied into the TCP model and ran to ensure that the model is functioning as expected. Here is the list of LTL assertions:
 \\
 
 LTL\_1:\\

@@ -101,15 +101,15 @@ proctype client(int x) {
           /* Timeout, must retransmit data */
           printf("CLIENT: Timeout, retransmitting data.\n");
           goto TRANSMIT;
-        :: else -> assert(false);
+        :: else -> /* IMM_1 */ assert(false);
         fi;
       fi;
-    :: else -> assert(false);
+    :: else -> /* IMM_2 */ assert(false);
     fi;
     toClient?sig;
   od;
 
-  /* This should be unreachable code */
+  /* IMM_3 */
   assert(false);
 
   FIN_WAIT_1:
@@ -125,7 +125,7 @@ proctype client(int x) {
   :: (sig == ACK) ->
     /* Server received close request */
     goto  FIN_WAIT_2;
-  :: else -> goto FIN_WAIT_1;
+  :: else -> /* IMM_4 */ assert(false);
   fi;
 
   CLOSING:
@@ -212,6 +212,7 @@ proctype server(int y) {
   fi;
 
   ESTABLISHED_CONNECTION:
+  sstate = ESTABLISHED_CONNECTION_STATE;
   printf("SERVER: ESTABLISHED CONNECTION\n");
   mtype sig;
   do
@@ -261,14 +262,14 @@ proctype server(int y) {
           /* Timeout, must retransmit data */
           printf("SERVER: Timeout, retransmitting data.\n");
           goto TRANSMIT;
-        :: else -> assert(false);
+        :: else -> /* IMM_1 */ assert(false);
         fi;
       fi;
-    :: else -> assert(false);
+    :: else -> /* IMM_2 */ assert(false);
     fi;
   od;
 
-  /* This should be unreachable code */
+  /* IMM_3 */
   assert(false);
 
   FIN_WAIT_1:
@@ -283,7 +284,7 @@ proctype server(int y) {
   :: (sig == ACK) ->
     /* Server received close request */
     goto  FIN_WAIT_2;
-  :: else -> goto FIN_WAIT_1;
+  :: else -> /* IMM_4 */ assert(false);
   fi;
 
   CLOSING:
