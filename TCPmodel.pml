@@ -1,5 +1,5 @@
 int TIMEOUT = 10;
-mtype = {SYN, ACK, SYN_ACK, RST, SEND, FIN};
+mtype = {SYN, ACK, SYN_ACK, RST, SEND, FIN, IDLE, TIMEOUT};
 chan toServer = [1] of {mtype};
 chan toClient = [1] of {mtype};
 int Seq = 0;
@@ -47,43 +47,67 @@ proctype client(int x) {
 
   ESTABLISHED_CONNECTION:
   printf("CLIENT: ESTABLISHED CONNECTION\n");
-  if
-  :: /* Send packet */
+  mtype sig = IDLE;
+  do
+  ::
     if
-    :: data = 0;
-    :: data = 1;
-    fi;
-    TRANSMIT:
-    dataAck = 0;
-    toServer!SEND;
-    int time = 0;
-    do
-    :: (dataAck == 1) ->
-      /* Data packet was successfully received */
-      goto ESTABLISHED_CONNECTION;
-    :: (serverFIN == 1) ->
-      toClient?FIN;
+    :: (sig == SEND) ->
+      /* Server is sending data */
+      if
+      :: /* Simulate lost packet */
+        printf("CLIENT: Simulating lost packet\n");
+        toServer!TIMEOUT;
+      :: /* Read packet */
+        printf("CLIENT: Received data %d\n", data);
+        toServer!ACK;
+      fi;
+    :: (sig == FIN) ->
+      /* Server wants to close connection */
       printf("CLIENT: Server initiated closing sequence\n");
-      /* Server is initiating closing sequence */
       toServer!ACK;
       goto CLOSE_WAIT;
-    :: (time > TIMEOUT) ->
-      /* Timeout: retransmit */
-      printf("CLIENT: RETRANSMITTING\n");
-      goto TRANSMIT;
-    :: else -> printf("CLIENT: Waiting...\n"); time++; skip;
-    od;
-  :: /* Close connection */
-    toServer!FIN;
-    goto FIN_WAIT_1;
-  fi;
+    :: (sig == IDLE) ->
+      if
+      :: /* Stay idle */
+        toServer!IDLE;
+      :: /* Start closing sequence */
+        printf("CLIENT: Starting closing sequence\n");
+        toServer!FIN;
+        goto FIN_WAIT_1;
+      :: /* Send data */
+        if
+        :: data = 0;
+        :: data = 1;
+        fi;
+        printf("CLIENT: Sending data %d\n", data);
+
+        TRANSMIT:
+        toServer!SEND;
+        printf("CLIENT: Waiting...\n");
+        toClient?sig;
+        if
+        :: (sig == ACK) ->
+          /* Data packet was successfully received */
+          printf("CLIENT: Data ACK was received from server\n");
+          toServer!IDLE;
+        :: (sig == TIMEOUT) ->
+          /* Timeout, must retransmit data */
+          printf("CLIENT: Timeout, retransmitting data.\n");
+          goto TRANSMIT;
+        :: else -> assert(false);
+        fi;
+      fi;
+    :: else -> assert(false);
+    fi;
+    toClient?sig;
+  od;
 
   /* This should be unreachable code */
   assert(false);
 
   FIN_WAIT_1:
   printf("CLIENT: FIN WAIT 1\n");
-  mtype sig;
+  sig;
   toClient?sig;
   if
   :: (sig == FIN) ->
@@ -171,32 +195,63 @@ LISTEN:
 
   ESTABLISHED_CONNECTION:
   printf("SERVER: ESTABLISHED CONNECTION\n");
-  if
-  :: /* Wait for packets from client */
-    mtype sig;
+  mtype sig;
+  do
+  ::
     toServer?sig;
     if
     :: (sig == SEND) ->
+      /* Client is sending data */
       if
       :: /* Simulate lost packet */
         printf("SERVER: Simulating lost packet\n");
-        goto ESTABLISHED_CONNECTION;
+        toClient!TIMEOUT;
       :: /* Read packet */
-        dataAck = 1;
         printf("SERVER: Received data %d\n", data);
-        goto ESTABLISHED_CONNECTION;
+        toClient!ACK;
       fi;
     :: (sig == FIN) ->
       /* Client wants to close connection */
+      printf("SERVER: Client initiated closing sequence\n");
       toClient!ACK;
       goto CLOSE_WAIT;
+    :: (sig == IDLE) ->
+      if
+      :: /* Stay idle */
+        toClient!IDLE;
+      :: /* Start closing sequence */
+        printf("SERVER: Starting closing sequence\n");
+        toClient!FIN;
+        goto FIN_WAIT_1;
+      :: /* Send data */
+        if
+        :: data = 0;
+        :: data = 1;
+        fi;
+        printf("SERVER: Sending data %d\n", data);
+
+        TRANSMIT:
+        toClient!SEND;
+        printf("SERVER: Waiting...\n");
+        toServer?sig;
+        if
+        :: (sig == ACK) ->
+          /* Data packet was successfully received */
+          printf("SERVER: Data ACK was received from client\n");
+          toClient!IDLE;
+        :: (sig == TIMEOUT) ->
+          /* Timeout, must retransmit data */
+          printf("SERVER: Timeout, retransmitting data.\n");
+          goto TRANSMIT;
+        :: else -> assert(false);
+        fi;
+      fi;
     :: else -> assert(false);
     fi;
-  :: /* Close connection */
-    serverFIN = 1;
-    toClient!FIN;
-    goto FIN_WAIT_1;
-  fi;
+  od;
+
+  /* This should be unreachable code */
+  assert(false);
 
   FIN_WAIT_1:
   printf("SERVER: FIN WAIT 1\n");
