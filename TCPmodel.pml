@@ -4,9 +4,7 @@ chan toServer = [1] of {mtype};
 chan toClient = [1] of {mtype};
 int Seq = 0;
 int Ack = 0;
-int dataAck = 0;
 byte data;
-byte serverFIN = 0;
 
 proctype client(int x) {
 
