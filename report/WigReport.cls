@@ -20,7 +20,7 @@
 \setlength{\headsep}{0in}
 \setlength{\marginparwidth}{0.5in}
 
-\newcommand{\ReportNumber}[1]{\renewcommand{\SR@documenttitle}{Report No. #1}}
+\newcommand{\ReportNumber}[1]{\renewcommand{\SR@documenttitle}{Fall 2012}}
 \newcommand{\SR@documenttitle}{}
 
 \include{TitlePage}

@@ -23,20 +23,263 @@ TODO Brief description of the Project
 \subsection{Approach}
 
 TODO The approach that you used to implement TCP Connection Management Protocol
+\\
+
+Here are a few the things that need to be modelled:
+\begin{itemize}
+\item Server and client start off as \verb|CLOSED|.
+\item Server can enter \verb|LISTEN| before/after the client sends \verb|SYN|.
+\item Server's \verb|SYN| is corrupted. Client needs to reset.
+\item Once the connection is established both client and server can send data to the other.
+\item With an established connection both client and server can close the connection.
+\item Client and server can both send a \verb|FIN| at the same time.
+\end{itemize}
+
+We decided to have server and client as separate \textit{proctypes}. Signals are sent between these \textit{proctypes} through two channels: \verb|toServer| and \verb|toClient|.
 
 \subsection{Connection Established / Data Transmission State}
 
 TODO How you implemented the retransmission mechanism in the Connection Established / Data Transmission State of the TCP
 
+Once the connection is established both \textit{proctypes} enter a \verb|do| loop. Inside the loop each \textit{proctype} listens for a signal from the other. In order to avoid deadlock the client sends a signal first. This is an arbitrary decision. However having the client always send the first signal does not correctly model the behaviour of TCP. This was addressed by having additional signals. More specifically, \verb|TIMEOUT| and \verb|IDLE|. This way the client will non-deterministically send either a \verb|SEND| where the data is either a 0 or 1, a \verb|FIN| to close the connection, or an \verb|IDLE| to simulate doing nothing.
+
+When a \textit{proctype} signals a \verb|SEND| the other \textit{proctype} will non-deterministically chose between whether to send and \verb|ACK| or to simulate a lost packet. Upon a lost packet, in TCP the sender will retransmit once a timeout is reached. To simulate this behaviour, the \textit{proctype} receiving the data will send a \verb|TIMEOUT| signal to the sender. The sender will then retransmit the same data until it receives and \verb|ACK|.
+
 \subsection{Additional Mechanisms}
 
 TODO Any additional mechanisms that you added
+
+I don't think we did.
 
 \section{Verification with Spin}
 
 \subsection{Immediate and LTL Assertions}
 
 TODO List of Immediate and LTL Assertions and Descriptions. For each assertion you incorporate, it must be accompanied by a description of what you are trying to verify. E.g., what behaviour of the TCP / retransmission mechanism you are trying to check the correctness?
+\\
+
+Immediate assertions were added in multiple places to assert that there are no unwanted signals.
+\\
+
+LTL\_1:\\
+\begin{verbatim}
+#define p (cstate == CLOSED_STATE)
+#define q (cstate == CLOSED_STATE || cstate == SYN_SENT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|CLOSED| state can only go to the \verb|SYN_SENT| state.
+Never claim:\\
+TODO\\
+
+LTL\_2:\\
+\begin{verbatim}
+#define p (sstate == CLOSED_STATE)
+#define q (sstate == CLOSED_STATE || sstate == LISTEN_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|CLOSED| state can only go to the \verb|LISTEN| state.
+Never claim:\\
+TODO\\
+
+LTL\_3:\\
+\begin{verbatim}
+#define p (cstate == SYN_SENT_STATE)
+#define q (cstate == SYN_SENT_STATE || cstate == SYN_RCVD_STATE || cstate == ESTABLISHED_CONNECTION_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|SYN SENT| state can only go to the \verb|SYN RCVD| and \verb|ESTABLISHED CONNECTION| states.
+Never claim:\\
+TODO\\
+
+LTL\_4:\\
+\begin{verbatim}
+#define p (sstate == LISTEN_STATE)
+#define q (sstate == LISTEN_STATE || sstate == SYN_RCVD_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|LISTEN| state can only go to the \verb|SYN RCVD| state.
+Never claim:\\
+TODO\\
+
+LTL\_5:\\
+\begin{verbatim}
+#define p (cstate == SYN_RCVD_STATE)
+#define q (cstate == SYN_RCVD_STATE || cstate == SYN_SENT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|SYN SENT| state.
+Never claim:\\
+TODO\\
+
+LTL\_6:\\
+\begin{verbatim}
+#define p (sstate == SYN_RCVD_STATE)
+#define q (sstate == SYN_RCVD_STATE || sstate == LISTEN_STATE || sstate == ESTABLISHED_CONNECTION_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|LISTEN| and \verb|ESTABLISHED CONNECTION| states.
+Never claim:\\
+TODO\\
+
+LTL\_7:\\
+\begin{verbatim}
+#define p (cstate == ESTABLISHED_CONNECTION_STATE)
+#define q (cstate == ESTABLISHED_CONNECTION_STATE || cstate == FIN_WAIT_1_STATE || cstate == CLOSE_WAIT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|ESTABLISHED CONNECTION| state can only go to the \verb|FIN WAIT 1| and \verb|CLOSE WAIT| states.
+Never claim:\\
+TODO\\
+
+LTL\_8:\\
+\begin{verbatim}
+#define p (sstate == ESTABLISHED_CONNECTION_STATE)
+#define q (sstate == ESTABLISHED_CONNECTION_STATE || sstate == FIN_WAIT_1_STATE || sstate == CLOSE_WAIT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|ESTABLISHED CONNECTION| state can only go to the \verb|FIN WAIT 1| and \verb|CLOSE WAIT| states.
+Never claim:\\
+TODO\\
+
+LTL\_9:\\
+\begin{verbatim}
+#define p (cstate == FIN_WAIT_1_STATE)
+#define q (cstate == FIN_WAIT_1_STATE || cstate == FIN_WAIT_2_STATE || cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
+Never claim:\\
+TODO\\
+
+LTL\_10:\\
+\begin{verbatim}
+#define p (sstate == FIN_WAIT_1_STATE)
+#define q (sstate == FIN_WAIT_1_STATE || sstate == FIN_WAIT_2_STATE || sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
+Never claim:\\
+TODO\\
+
+LTL\_11:\\
+\begin{verbatim}
+#define p (cstate == FIN_WAIT_2_STATE)
+#define q (cstate == FIN_WAIT_2_STATE || cstate == TIME_WAIT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
+Never claim:\\
+TODO\\
+
+LTL\_12:\\
+\begin{verbatim}
+#define p (sstate == FIN_WAIT_2_STATE)
+#define q (sstate == FIN_WAIT_2_STATE || sstate == TIME_WAIT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
+Never claim:\\
+TODO\\
+
+LTL\_12:\\
+\begin{verbatim}
+#define p (cstate == CLOSING_STATE)
+#define q (cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|CLOSING| state can only go to the \verb|TIME WAIT| state.
+Never claim:\\
+TODO\\
+
+LTL\_13:\\
+\begin{verbatim}
+#define p (sstate == CLOSING_STATE)
+#define q (sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|CLOSING| state can only go to the \verb|TIME WAIT| state.
+Never claim:\\
+TODO\\
+
+LTL\_14:\\
+\begin{verbatim}
+#define p (cstate == TIME_WAIT_STATE)
+#define q (cstate == TIME_WAIT_STATE || cstate == CLOSED_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|TIME WAIT| state can only go to the \verb|CLOSED| state.
+Never claim:\\
+TODO\\
+
+LTL\_15:\\
+\begin{verbatim}
+#define p (sstate == TIME_WAIT_STATE)
+#define q (sstate == TIME_WAIT_STATE || sstate == CLOSED_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|TIME WAIT| state can only go to the \verb|CLOSED| state.
+Never claim:\\
+TODO\\
+
+LTL\_16:\\
+\begin{verbatim}
+#define p (cstate == CLOSE_WAIT_STATE)
+#define q (cstate == CLOSE_WAIT_STATE || cstate == LAST_ACK_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|CLOSE WAIT| state can only go to the \verb|LAST ACK| state.
+Never claim:\\
+TODO\\
+
+LTL\_17:\\
+\begin{verbatim}
+#define p (sstate == CLOSE_WAIT_STATE)
+#define q (sstate == CLOSE_WAIT_STATE || sstate == LAST_ACK_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|CLOSE WAIT| state can only go to the \verb|LAST ACK| state.
+Never claim:\\
+TODO\\
+
+LTL\_18:\\
+\begin{verbatim}
+#define p (cstate == LAST_ACK_STATE)
+#define q (cstate == LAST_ACK_STATE || cstate == CLOSED_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the client \textit{proctype} from the \verb|LAST ACK| state can only go to the \verb|CLOSED| state.
+Never claim:\\
+TODO\\
+
+LTL\_19:\\
+\begin{verbatim}
+#define p (sstate == LAST_ACK_STATE)
+#define q (sstate == LAST_ACK_STATE || sstate == CLOSED_STATE)
+![]<>(p -> Xq)
+\end{verbatim}
+Description:\\
+This assertion makes sure that the server \textit{proctype} from the \verb|LAST ACK| state can only go to the \verb|CLOSED| state.
+Never claim:\\
+TODO\\
 
 \section{Mutation Testing}
 
