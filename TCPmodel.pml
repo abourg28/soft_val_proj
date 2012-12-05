@@ -1,7 +1,12 @@
 int TIMEOUT = 10;
-mtype = {SYN, ACK, SYN_ACK, RST, SEND, FIN, IDLE, TIMEOUT};
+mtype = {SYN, ACK, SYN_ACK, RST, SEND, FIN, IDLE, TIMEOUT,
+         CLOSED_STATE, LISTEN_STATE, SYN_SENT_STATE, SYN_RCVD_STATE,
+         ESTABLISHED_CONNECTION_STATE, FIN_WAIT_1_STATE, FIN_WAIT_2_STATE,
+         CLOSING_STATE, TIME_WAIT_STATE, CLOSE_WAIT_STATE, LAST_ACK_STATE};
 chan toServer = [1] of {mtype};
 chan toClient = [1] of {mtype};
+mtype cstate;
+mtype sstate;
 int Seq = 0;
 int Ack = 0;
 byte data;
@@ -9,6 +14,7 @@ byte data;
 proctype client(int x) {
 
   CLOSED:
+  cstate = CLOSED_STATE;
   printf("CLIENT: CLOSED\n");
   if
   :: /* connect */
@@ -20,6 +26,7 @@ proctype client(int x) {
   fi;
 
   SYN_SENT:
+  cstate = SYN_SENT_STATE;
   printf("CLIENT: SYN SENT\n");
   toClient?SYN_ACK;
   if
@@ -37,6 +44,7 @@ proctype client(int x) {
   fi;
 
   SYN_RCVD:
+  cstate = SYN_RCVD_STATE;
   printf("CLIENT: SYN RECEIVED\n");
   Seq = x;
   toServer!SYN;
@@ -44,6 +52,7 @@ proctype client(int x) {
   goto SYN_SENT;
 
   ESTABLISHED_CONNECTION:
+  cstate = ESTABLISHED_CONNECTION_STATE;
   printf("CLIENT: ESTABLISHED CONNECTION\n");
   mtype sig = IDLE;
   do
@@ -104,6 +113,7 @@ proctype client(int x) {
   assert(false);
 
   FIN_WAIT_1:
+  cstate = FIN_WAIT_1_STATE;
   printf("CLIENT: FIN WAIT 1\n");
   sig;
   toClient?sig;
@@ -119,17 +129,20 @@ proctype client(int x) {
   fi;
 
   CLOSING:
+  cstate = CLOSING_STATE;
   printf("CLIENT: CLOSING\n");
   toClient?ACK;
   goto TIME_WAIT;
 
   FIN_WAIT_2:
+  cstate = FIN_WAIT_2_STATE;
   printf("CLIENT: FIN WAIT 2\n");
   toClient?FIN;
   toServer!ACK;
   goto TIME_WAIT;
 
   TIME_WAIT:
+  cstate = TIME_WAIT_STATE;
   printf("CLIENT: TIME WAIT\n");
   /* Wait for all packets to terminate? */
   toServer!ACK;
@@ -137,23 +150,27 @@ proctype client(int x) {
   goto FINISHED;
 
   CLOSE_WAIT:
+  cstate = CLOSE_WAIT_STATE;
   printf("CLIENT: CLOSE WAIT\n");
   toServer!FIN;
   goto LAST_ACK;
 
   LAST_ACK:
+  cstate = LAST_ACK_STATE;
   printf("CLIENT: LAST ACK\n");
   toClient?ACK;
   /* Should be goto CLOSED; */
   goto FINISHED;
 
   FINISHED:
+  cstate = CLOSED_STATE;
   printf("CLIENT: FINISHED\n");
 }
 
 proctype server(int y) {
 
   CLOSED:
+  sstate = CLOSED_STATE;
   printf("SERVER: CLOSED\n");
   if
   :: /* listen */
@@ -162,7 +179,9 @@ proctype server(int y) {
   :: /* do nothing */
     goto CLOSED;
   fi;
-LISTEN:
+
+  LISTEN:
+  sstate = LISTEN_STATE;
   printf("SERVER: LISTEN\n");
   if
   :: /* Send correct packet */
@@ -180,6 +199,7 @@ LISTEN:
   fi;
 
   SYN_RCVD:
+  sstate = SYN_RCVD_STATE;
   printf("SERVER: SYN RECEIVED\n");
   toServer?SYN;
   if
@@ -252,6 +272,7 @@ LISTEN:
   assert(false);
 
   FIN_WAIT_1:
+  sstate = FIN_WAIT_1_STATE;
   printf("SERVER: FIN WAIT 1\n");
   toServer?sig;
   if
@@ -266,17 +287,20 @@ LISTEN:
   fi;
 
   CLOSING:
+  sstate = CLOSING_STATE;
   printf("SERVER: CLOSING\n");
   toServer?ACK;
   goto TIME_WAIT;
 
   FIN_WAIT_2:
+  sstate = FIN_WAIT_2_STATE;
   printf("SERVER: FIN WAIT 2\n");
   toServer?FIN;
   toClient!ACK;
   goto TIME_WAIT;
 
   TIME_WAIT:
+  sstate = TIME_WAIT_STATE;
   printf("SERVER: TIME WAIT\n");
   /* Wait for all packets to terminate? */
   toClient!ACK;
@@ -284,17 +308,20 @@ LISTEN:
   goto FINISHED;
 
   CLOSE_WAIT:
+  sstate = CLOSE_WAIT_STATE;
   printf("SERVER: CLOSE WAIT\n");
   toClient!FIN;
   goto LAST_ACK;
 
   LAST_ACK:
+  sstate = LAST_ACK_STATE;
   printf("SERVER: LAST ACK\n");
   toServer?ACK;
   /* Should be goto CLOSED; */
   goto FINISHED;
 
   FINISHED:
+  sstate = CLOSED_STATE;
   printf("SERVER: FINISHED\n");
 }
 
