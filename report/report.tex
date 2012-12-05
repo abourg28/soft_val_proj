@@ -1,0 +1,54 @@
+\documentclass{WigReport}
+\usepackage{epsfig} % so you can include .eps figures
+\usepackage{alltt}  % so you can include program text
+\usepackage{verbatim}
+\title{Transport Control Protocol Model}
+\ReportNumber{1}
+\author{Alex Bourgeois (260355141) \\
+Alex Selesse (260374116)}
+\begin{document}
+
+\MakeTitlePage
+\tableofcontents
+%\listoffigures
+% \listoftables
+\clearpage
+
+\section{Introduction}
+
+TODO Brief description of the Project
+
+\section{Implementation Details}
+
+\subsection{Approach}
+
+TODO The approach that you used to implement TCP Connection Management Protocol
+
+\subsection{Connection Established / Data Transmission State}
+
+TODO How you implemented the retransmission mechanism in the Connection Established / Data Transmission State of the TCP
+
+\subsection{Additional Mechanisms}
+
+TODO Any additional mechanisms that you added
+
+\section{Verification with Spin}
+
+\subsection{Immediate and LTL Assertions}
+
+TODO List of Immediate and LTL Assertions and Descriptions. For each assertion you incorporate, it must be accompanied by a description of what you are trying to verify. E.g., what behaviour of the TCP / retransmission mechanism you are trying to check the correctness?
+
+\section{Mutation Testing}
+
+TODO
+For each mutant / fault:
+∗ Label it as MUTANT\_XX (where XX is an integer)
+∗ Describe the intented incorrect behaviour that your TCP protocol should generate, and indicate the location (in terms of line number) of the mutant 6
+∗ Which assertion should catch the incorrect behaviour? Indicate the assertion based on the label number (E.g., “...MUTANT\_05 was caught by assertion LTL\_47...”
+∗ Did the assertion (immediate or LTL) was able to detect the incorrect behaviour? If not, can you suggest another immediate or LTL assertion to add?
+
+\section{Conclusions}
+
+TODO Closing remarks on the implementation of your Promela model and the approach you taken to verify the TCP protocol
+
+\end{document}
