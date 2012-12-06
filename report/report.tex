@@ -79,14 +79,17 @@ This assertion makes sure that when a \textit{proctype} has sent data it should 
 IMM\_2:\\
 Description:\\
 This assertion makes sure that when a \textit{proctype} is in the data transmission state, it only receives the following signals from the other: \verb|SEND|, \verb|FIN|, and \verb|IDLE|.
+\\
 
 IMM\_3:\\
 Description:\\
 This assertion makes sure that when a \textit{proctype} is in the data transmission state, it does not break out of the \verb|do| loop.
+\\
 
 IMM\_4:\\
 Description:\\
 This assertion makes sure that when a \textit{proctype} is in the \verb|FIN WAIT 1| state it should only receive a \verb|FIN| or \verb|ACK| signal from the other.
+\\
 
 LTL assertions were created for ensuring the behaviour as depicted in the given Finite State Machine. The never claim of each LTL assertion was copied into the TCP model and ran to ensure that the model is functioning as expected. Here is the list of LTL assertions:
 \\
@@ -614,12 +617,14 @@ Never claim:\\
 TODO
 For each mutant / fault:
 ∗ Label it as MUTANT\_XX (where XX is an integer)
-∗ Describe the intented incorrect behaviour that your TCP protocol should generate, and indicate the location (in terms of line number) of the mutant 6
+∗ Describe the intended incorrect behaviour that your TCP protocol should generate, and indicate the location (in terms of line number) of the mutant 6
 ∗ Which assertion should catch the incorrect behaviour? Indicate the assertion based on the label number (E.g., “...MUTANT\_05 was caught by assertion LTL\_47...”
 ∗ Did the assertion (immediate or LTL) was able to detect the incorrect behaviour? If not, can you suggest another immediate or LTL assertion to add?
 
 \section{Conclusions}
 
 TODO Closing remarks on the implementation of your Promela model and the approach you taken to verify the TCP protocol
+
+Promela is a language that is hard to code nicely. For projects like this it is very easy to get lost. I made use of labels to try to organize my code however that can only do so much. Had this not been the case I would have gladly made this model more general and more comprehensive. For example it would be nice to model several clients connecting to a server. In addition coming up with all these LTL assertions are long and mind-numbing. Having said that the project was interesting.
 
 \end{document}
