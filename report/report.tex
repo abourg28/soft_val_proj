@@ -206,7 +206,7 @@ Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|SYN SENT| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (cstate == SYN_RCVD_STATE)
   #define q (cstate == SYN_RCVD_STATE || cstate == SYN_SENT_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -232,7 +232,7 @@ Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|LISTEN| and \verb|ESTABLISHED CONNECTION| states.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (sstate == SYN_RCVD_STATE)
   #define q (sstate == SYN_RCVD_STATE || sstate == LISTEN_STATE || sstate == ESTABLISHED_CONNECTION_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -258,7 +258,7 @@ Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|ESTABLISHED CONNECTION| state can only go to the \verb|FIN WAIT 1| and \verb|CLOSE WAIT| states.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (cstate == ESTABLISHED_CONNECTION_STATE)
   #define q (cstate == ESTABLISHED_CONNECTION_STATE || cstate == FIN_WAIT_1_STATE || cstate == CLOSE_WAIT_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -310,7 +310,7 @@ Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (cstate == FIN_WAIT_1_STATE)
   #define q (cstate == FIN_WAIT_1_STATE || cstate == FIN_WAIT_2_STATE || cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -336,7 +336,7 @@ Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (sstate == FIN_WAIT_1_STATE)
   #define q (sstate == FIN_WAIT_1_STATE || sstate == FIN_WAIT_2_STATE || sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -362,7 +362,7 @@ Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (cstate == FIN_WAIT_2_STATE)
   #define q (cstate == FIN_WAIT_2_STATE || cstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -388,7 +388,7 @@ Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (sstate == FIN_WAIT_2_STATE)
   #define q (sstate == FIN_WAIT_2_STATE || sstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -414,7 +414,7 @@ Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|CLOSING| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (cstate == CLOSING_STATE)
   #define q (cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -440,7 +440,7 @@ Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|CLOSING| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (sstate == CLOSING_STATE)
   #define q (sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -466,7 +466,7 @@ Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|TIME WAIT| state can only go to the \verb|CLOSED| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (cstate == TIME_WAIT_STATE)
   #define q (cstate == TIME_WAIT_STATE || cstate == CLOSED_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -492,7 +492,7 @@ Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|TIME WAIT| state can only go to the \verb|CLOSED| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (sstate == TIME_WAIT_STATE)
   #define q (sstate == TIME_WAIT_STATE || sstate == CLOSED_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -518,7 +518,7 @@ Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|CLOSE WAIT| state can only go to the \verb|LAST ACK| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (cstate == CLOSE_WAIT_STATE)
   #define q (cstate == CLOSE_WAIT_STATE || cstate == LAST_ACK_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -544,7 +544,7 @@ Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|CLOSE WAIT| state can only go to the \verb|LAST ACK| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (sstate == CLOSE_WAIT_STATE)
   #define q (sstate == CLOSE_WAIT_STATE || sstate == LAST_ACK_STATE)
   ![]<>(p -> Xq)
   T0_init:
@@ -570,7 +570,7 @@ Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|LAST ACK| state can only go to the \verb|CLOSED| state.
 Never claim:\\
 \begin{lstlisting}
-  #define p (sstate == CLOSED_STATE)
+  #define p (cstate == LAST_ACK_STATE)
   #define q (cstate == LAST_ACK_STATE || cstate == CLOSED_STATE)
   ![]<>(p -> Xq)
   T0_init:
