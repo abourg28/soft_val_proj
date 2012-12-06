@@ -1,11 +1,22 @@
-\documentclass{WigReport} \usepackage{epsfig} % so you can include .eps
-figures \usepackage{alltt}  % so you can include program text
-\usepackage{verbatim} \usepackage{listings} \usepackage{color}
-\definecolor{ForestGreen}{rgb}{0.133, 0.545, 0.133} \lstset{ language=Promela,
-breaklines=true, commentstyle=\color{red}, keywordstyle=\color{ForestGreen},
-basicstyle=\ttfamily } \title{Transport Control Protocol Model}
-\ReportNumber{1} \author{Alex Bourgeois (260355141) \\ Alex Selesse
-(260374116)} \begin{document}
+\documentclass{WigReport}
+\usepackage{epsfig} % so you can include .eps figures 
+\usepackage{alltt}  % so you can include program text
+\usepackage{verbatim} 
+\usepackage{listings} 
+\usepackage{color}
+\definecolor{ForestGreen}{rgb}{0.133, 0.545, 0.133} 
+\lstset{
+	language=Promela,
+	breaklines=true,
+	commentstyle=\color{red},
+	keywordstyle=\color{ForestGreen},
+	basicstyle=\ttfamily
+}
+\title{Transport Control Protocol Model}
+\ReportNumber{1} 
+\author{Alex Bourgeois (260355141) \\
+ Alex Selesse (260374116)} 
+\begin{document}
 
 \MakeTitlePage
 \tableofcontents
@@ -15,14 +26,11 @@ basicstyle=\ttfamily } \title{Transport Control Protocol Model}
 
 \section{Introduction}
 
-TODO Brief description of the Project
+Our project abides by the protocols mentioned in the project specifications to implement a model of TCP. To mirror the Finite State Machine we have named our \textit{proctypes} as client and server. The communication between these \textit{proctypes} is done with the use of two channels. States are represented as labels in the promela code. The data transmission state was simply modelled with a packet containing one byte which has a value of either 0 or 1.
 
 \section{Implementation Details}
 
 \subsection{Approach}
-
-TODO The approach that you used to implement TCP Connection Management
-Protocol \\
 
 Here are a few the things that need to be modelled:
 \begin{itemize}
@@ -34,31 +42,11 @@ Here are a few the things that need to be modelled:
 \item Client and server can both send a \verb|FIN| at the same time.
 \end{itemize}
 
-  \item Server and client start off as \verb|CLOSED|.
-
-  \item Server can enter \verb|LISTEN| before/after the client sends
-    \verb|SYN|.
-
-  \item Server's \verb|SYN| is corrupted. Client needs to reset.
-
-  \item Once the connection is established both client and server can send
-    data to the other.
-
-  \item With an established connection both client and server can close the
-    connection.
-
-  \item Client and server can both send a \verb|FIN| at the same time.
-
-\end{itemize}
-
 We decided to have server and client as separate \textit{proctypes}. Signals
 are sent between these \textit{proctypes} through two channels:
 \verb|toServer| and \verb|toClient|.
 
 \subsection{Connection Established / Data Transmission State}
-
-TODO How you implemented the retransmission mechanism in the Connection
-Established / Data Transmission State of the TCP
 
 Once the connection is established both \textit{proctypes} enter a \verb|do|
 loop. Inside the loop each \textit{proctype} listens for a signal from the
@@ -81,11 +69,6 @@ an \verb|ACK|.
 \section{Verification with Spin}
 
 \subsection{Immediate and LTL Assertions}
-
-TODO List of Immediate and LTL Assertions and Descriptions. For each assertion
-you incorporate, it must be accompanied by a description of what you are
-trying to verify. E.g., what behaviour of the TCP / retransmission mechanism
-you are trying to check the correctness?  \\
 
 Immediate assertions were added in multiple places to assert that there are no unwanted signals. Here is the list of immediate assertions:
 \\
@@ -171,9 +154,7 @@ LTL\_3:\\
 ![]<>(p -> Xq)
 \end{lstlisting}
 Description:\\
-This assertion makes sure that the client \textit{proctype} from the \verb|SYN
-SENT| state can only go to the \verb|SYN RCVD| and \verb|ESTABLISHED
-CONNECTION| states.
+This assertion makes sure that the client \textit{proctype} from the \verb|SYN SENT| state can only go to the \verb|SYN RCVD| and \verb|ESTABLISHED CONNECTION| states.
 Never claim:\\
 \begin{lstlisting}
   #define p (cstate == SYN_SENT_STATE)
@@ -226,8 +207,7 @@ LTL\_5:\\
 ![]<>(p -> Xq)
 \end{lstlisting}
 Description:\\
-This assertion makes sure that the client \textit{proctype} from the \verb|SYN
-RCVD| state can only go to the \verb|SYN SENT| state.
+This assertion makes sure that the client \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|SYN SENT| state.
 Never claim:\\
 \begin{lstlisting}
   #define p (cstate == SYN_RCVD_STATE)
@@ -253,9 +233,7 @@ LTL\_6:\\
 ![]<>(p -> Xq)
 \end{lstlisting}
 Description:\\
-This assertion makes sure that the server \textit{proctype} from the \verb|SYN
-RCVD| state can only go to the \verb|LISTEN| and \verb|ESTABLISHED CONNECTION|
-states.
+This assertion makes sure that the server \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|LISTEN| and \verb|ESTABLISHED CONNECTION| states.
 Never claim:\\
 \begin{lstlisting}
   #define p (sstate == SYN_RCVD_STATE)
@@ -337,9 +315,7 @@ LTL\_9:\\
 ![]<>(p -> Xq)
 \end{lstlisting}
 Description:\\
-This assertion makes sure that the client \textit{proctype} from the \verb|FIN
-WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and
-\verb|TIME WAIT| states.
+This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
 Never claim:\\
 \begin{lstlisting}
   #define p (cstate == FIN_WAIT_1_STATE)
@@ -365,9 +341,7 @@ LTL\_10:\\
 ![]<>(p -> Xq)
 \end{lstlisting}
 Description:\\
-This assertion makes sure that the server \textit{proctype} from the \verb|FIN
-WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and
-\verb|TIME WAIT| states.
+This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
 Never claim:\\
 \begin{lstlisting}
   #define p (sstate == FIN_WAIT_1_STATE)
@@ -393,8 +367,7 @@ LTL\_11:\\
 ![]<>(p -> Xq)
 \end{lstlisting}
 Description:\\
-This assertion makes sure that the client \textit{proctype} from the \verb|FIN
-WAIT 2| state can only go to the \verb|TIME WAIT| state.
+This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
 \begin{lstlisting}
   #define p (cstate == FIN_WAIT_2_STATE)
@@ -420,8 +393,7 @@ LTL\_12:\\
 ![]<>(p -> Xq)
 \end{lstlisting}
 Description:\\
-This assertion makes sure that the server \textit{proctype} from the \verb|FIN
-WAIT 2| state can only go to the \verb|TIME WAIT| state.
+This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
 \begin{lstlisting}
   #define p (sstate == FIN_WAIT_2_STATE)
@@ -658,13 +630,6 @@ Never claim:\\
 
 \section{Mutation Testing}
 
-TODO
-For each mutant / fault:
-∗ Label it as MUTANT\_XX (where XX is an integer)
-∗ Describe the intended incorrect behaviour that your TCP protocol should generate, and indicate the location (in terms of line number) of the mutant 6
-∗ Which assertion should catch the incorrect behaviour? Indicate the assertion based on the label number (E.g., “...MUTANT\_05 was caught by assertion LTL\_47...”
-∗ Did the assertion (immediate or LTL) was able to detect the incorrect behaviour? If not, can you suggest another immediate or LTL assertion to add?
-
 MUTANT\_1 (line 227):\\
 Description:\\
 When the client sends data to the server, the server signals with a \verb|SYN| instead of a \verb|TIMEOUT|.\\
@@ -726,9 +691,6 @@ Status: Successfully caught by LTL\_8
 \\
 
 \section{Conclusions}
-
-TODO Closing remarks on the implementation of your Promela model and the
-approach you taken to verify the TCP protocol
 
 Promela is a language that is hard to code nicely. For projects like this it
 is very easy to get lost. I made use of labels to try to organize my code
