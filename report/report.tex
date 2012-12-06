@@ -2,6 +2,16 @@
 \usepackage{epsfig} % so you can include .eps figures
 \usepackage{alltt}  % so you can include program text
 \usepackage{verbatim}
+\usepackage{listings}
+\usepackage{color}
+\definecolor{ForestGreen}{rgb}{0.133, 0.545, 0.133}
+\lstset{
+  language=Promela,
+  breaklines=true,
+  commentstyle=\color{red},
+  keywordstyle=\color{ForestGreen},
+  basicstyle=\ttfamily
+}
 \title{Transport Control Protocol Model}
 \ReportNumber{1}
 \author{Alex Bourgeois (260355141) \\
@@ -82,15 +92,15 @@ LTL assertions were created for ensuring the behaviour as depicted in the given 
 \\
 
 LTL\_1:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == CLOSED_STATE)
 #define q (cstate == CLOSED_STATE || cstate == SYN_SENT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|CLOSED| state can only go to the \verb|SYN_SENT| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (cstate == CLOSED_STATE)
   #define q (cstate == CLOSED_STATE || cstate == SYN_SENT_STATE)
   never  {    /* ![]<>(p -> Xq) */
@@ -104,18 +114,18 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 LTL\_2:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == CLOSED_STATE)
 #define q (sstate == CLOSED_STATE || sstate == LISTEN_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|CLOSED| state can only go to the \verb|LISTEN| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (sstate == CLOSED_STATE || sstate == LISTEN_STATE)
   never  {    /* ![]<>(p -> Xq) */
@@ -129,18 +139,18 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 LTL\_3:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == SYN_SENT_STATE)
 #define q (cstate == SYN_SENT_STATE || cstate == SYN_RCVD_STATE || cstate == ESTABLISHED_CONNECTION_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|SYN SENT| state can only go to the \verb|SYN RCVD| and \verb|ESTABLISHED CONNECTION| states.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (cstate == SYN_SENT_STATE)
   #define q (cstate == SYN_SENT_STATE || cstate == SYN_RCVD_STATE || cstate == ESTABLISHED_CONNECTION_STATE)
   never  {    /* ![]<>(p -> Xq) */
@@ -154,19 +164,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_4:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == LISTEN_STATE)
 #define q (sstate == LISTEN_STATE || sstate == SYN_RCVD_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|LISTEN| state can only go to the \verb|SYN RCVD| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (sstate == LISTEN_STATE || sstate == SYN_RCVD_STATE)
   ![]<>(p -> Xq)
@@ -180,19 +190,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_5:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == SYN_RCVD_STATE)
 #define q (cstate == SYN_RCVD_STATE || cstate == SYN_SENT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|SYN SENT| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (cstate == SYN_RCVD_STATE || cstate == SYN_SENT_STATE)
   ![]<>(p -> Xq)
@@ -206,19 +216,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_6:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == SYN_RCVD_STATE)
 #define q (sstate == SYN_RCVD_STATE || sstate == LISTEN_STATE || sstate == ESTABLISHED_CONNECTION_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|LISTEN| and \verb|ESTABLISHED CONNECTION| states.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (sstate == SYN_RCVD_STATE || sstate == LISTEN_STATE || sstate == ESTABLISHED_CONNECTION_STATE)
   ![]<>(p -> Xq)
@@ -232,19 +242,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_7:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == ESTABLISHED_CONNECTION_STATE)
 #define q (cstate == ESTABLISHED_CONNECTION_STATE || cstate == FIN_WAIT_1_STATE || cstate == CLOSE_WAIT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|ESTABLISHED CONNECTION| state can only go to the \verb|FIN WAIT 1| and \verb|CLOSE WAIT| states.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (cstate == ESTABLISHED_CONNECTION_STATE || cstate == FIN_WAIT_1_STATE || cstate == CLOSE_WAIT_STATE)
   ![]<>(p -> Xq)
@@ -258,19 +268,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_8:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == ESTABLISHED_CONNECTION_STATE)
 #define q (sstate == ESTABLISHED_CONNECTION_STATE || sstate == FIN_WAIT_1_STATE || sstate == CLOSE_WAIT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|ESTABLISHED CONNECTION| state can only go to the \verb|FIN WAIT 1| and \verb|CLOSE WAIT| states.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (sstate == ESTABLISHED_CONNECTION_STATE || sstate == FIN_WAIT_1_STATE || sstate == CLOSE_WAIT_STATE)
   ![]<>(p -> Xq)
@@ -284,19 +294,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_9:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == FIN_WAIT_1_STATE)
 #define q (cstate == FIN_WAIT_1_STATE || cstate == FIN_WAIT_2_STATE || cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (cstate == FIN_WAIT_1_STATE || cstate == FIN_WAIT_2_STATE || cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
@@ -310,19 +320,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_10:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == FIN_WAIT_1_STATE)
 #define q (sstate == FIN_WAIT_1_STATE || sstate == FIN_WAIT_2_STATE || sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (sstate == FIN_WAIT_1_STATE || sstate == FIN_WAIT_2_STATE || sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
@@ -336,19 +346,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_11:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == FIN_WAIT_2_STATE)
 #define q (cstate == FIN_WAIT_2_STATE || cstate == TIME_WAIT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (cstate == FIN_WAIT_2_STATE || cstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
@@ -362,19 +372,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_12:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == FIN_WAIT_2_STATE)
 #define q (sstate == FIN_WAIT_2_STATE || sstate == TIME_WAIT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (sstate == FIN_WAIT_2_STATE || sstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
@@ -388,19 +398,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_12:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == CLOSING_STATE)
 #define q (cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|CLOSING| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
@@ -414,19 +424,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_13:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == CLOSING_STATE)
 #define q (sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|CLOSING| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
   ![]<>(p -> Xq)
@@ -440,19 +450,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_14:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == TIME_WAIT_STATE)
 #define q (cstate == TIME_WAIT_STATE || cstate == CLOSED_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|TIME WAIT| state can only go to the \verb|CLOSED| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (cstate == TIME_WAIT_STATE || cstate == CLOSED_STATE)
   ![]<>(p -> Xq)
@@ -466,19 +476,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_15:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == TIME_WAIT_STATE)
 #define q (sstate == TIME_WAIT_STATE || sstate == CLOSED_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|TIME WAIT| state can only go to the \verb|CLOSED| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (sstate == TIME_WAIT_STATE || sstate == CLOSED_STATE)
   ![]<>(p -> Xq)
@@ -492,19 +502,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_16:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == CLOSE_WAIT_STATE)
 #define q (cstate == CLOSE_WAIT_STATE || cstate == LAST_ACK_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|CLOSE WAIT| state can only go to the \verb|LAST ACK| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (cstate == CLOSE_WAIT_STATE || cstate == LAST_ACK_STATE)
   ![]<>(p -> Xq)
@@ -518,19 +528,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_17:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == CLOSE_WAIT_STATE)
 #define q (sstate == CLOSE_WAIT_STATE || sstate == LAST_ACK_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|CLOSE WAIT| state can only go to the \verb|LAST ACK| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (sstate == CLOSE_WAIT_STATE || sstate == LAST_ACK_STATE)
   ![]<>(p -> Xq)
@@ -544,19 +554,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_18:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (cstate == LAST_ACK_STATE)
 #define q (cstate == LAST_ACK_STATE || cstate == CLOSED_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|LAST ACK| state can only go to the \verb|CLOSED| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == CLOSED_STATE)
   #define q (cstate == LAST_ACK_STATE || cstate == CLOSED_STATE)
   ![]<>(p -> Xq)
@@ -570,19 +580,19 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 LTL\_19:\\
-\begin{verbatim}
+\begin{lstlisting}
 #define p (sstate == LAST_ACK_STATE)
 #define q (sstate == LAST_ACK_STATE || sstate == CLOSED_STATE)
 ![]<>(p -> Xq)
-\end{verbatim}
+\end{lstlisting}
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|LAST ACK| state can only go to the \verb|CLOSED| state.
 Never claim:\\
-\begin{verbatim}
+\begin{lstlisting}
   #define p (sstate == LAST_ACK_STATE)
   #define q (sstate == LAST_ACK_STATE || sstate == CLOSED_STATE)
   ![]<>(p -> Xq)
@@ -596,7 +606,7 @@ Never claim:\\
     :: (! ((q)) && (p)) -> goto accept_S4
     fi;
   }
-\end{verbatim}
+\end{lstlisting}
 
 
 \section{Mutation Testing}
