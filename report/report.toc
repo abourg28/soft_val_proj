@@ -1,8 +1,9 @@
 \contentsline {section}{\numberline {1}Introduction}{2}
-\contentsline {section}{\numberline {2}Implementation Details}{2}
-\contentsline {subsection}{\numberline {2.1}Approach}{2}
-\contentsline {subsection}{\numberline {2.2}Connection Established / Data Transmission State}{2}
-\contentsline {section}{\numberline {3}Verification with Spin}{2}
-\contentsline {subsection}{\numberline {3.1}Immediate and LTL Assertions}{2}
-\contentsline {section}{\numberline {4}Mutation Testing}{12}
-\contentsline {section}{\numberline {5}Conclusions}{13}
+\contentsline {section}{\numberline {2}Specification}{2}
+\contentsline {section}{\numberline {3}Implementation Details}{2}
+\contentsline {subsection}{\numberline {3.1}Approach}{2}
+\contentsline {subsection}{\numberline {3.2}Connection Established / Data Transmission State}{2}
+\contentsline {section}{\numberline {4}Verification with Spin}{2}
+\contentsline {subsection}{\numberline {4.1}Immediate and LTL Assertions}{2}
+\contentsline {section}{\numberline {5}Mutation Testing}{12}
+\contentsline {section}{\numberline {6}Conclusions}{13}

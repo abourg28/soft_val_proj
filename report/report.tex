@@ -28,6 +28,10 @@
 
 Our project abides by the protocols mentioned in the project specifications to implement a model of TCP. To mirror the Finite State Machine we have named our \textit{proctypes} as client and server. The communication between these \textit{proctypes} is done with the use of two channels. States are represented as labels in the promela code. The data transmission state was simply modelled with a packet containing one byte which has a value of either 0 or 1.
 
+\section{Specification}
+
+Our TCP model abides by the TCP standard for connection setup and teardown. Our data transmission state has been slightly simplified to adapt to promela.
+
 \section{Implementation Details}
 
 \subsection{Approach}
