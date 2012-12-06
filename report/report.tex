@@ -22,14 +22,25 @@ TODO Brief description of the Project
 TODO The approach that you used to implement TCP Connection Management
 Protocol \\
 
-Here are a few the things that need to be modelled: \begin{itemize} \item
-    Server and client start off as \verb|CLOSED|.  \item Server can enter
-    \verb|LISTEN| before/after the client sends \verb|SYN|.  \item Server's
-      \verb|SYN| is corrupted. Client needs to reset.  \item Once the
-      connection is established both client and server can send data to the
-    other.  \item With an established connection both client and server can
-    close the connection.  \item Client and server can both send a \verb|FIN|
-      at the same time.  \end{itemize}
+Here are a few the things that need to be modelled:
+\begin{itemize}
+
+  \item Server and client start off as \verb|CLOSED|.
+
+  \item Server can enter \verb|LISTEN| before/after the client sends
+    \verb|SYN|.
+
+  \item Server's \verb|SYN| is corrupted. Client needs to reset.
+
+  \item Once the connection is established both client and server can send
+    data to the other.
+
+  \item With an established connection both client and server can close the
+    connection.
+
+  \item Client and server can both send a \verb|FIN| at the same time.
+
+\end{itemize}
 
 We decided to have server and client as separate \textit{proctypes}. Signals
 are sent between these \textit{proctypes} through two channels:
@@ -42,26 +53,21 @@ Established / Data Transmission State of the TCP
 
 Once the connection is established both \textit{proctypes} enter a \verb|do|
 loop. Inside the loop each \textit{proctype} listens for a signal from the
-other. In order to avoid deadlock the client sends a signal first. This is an
-arbitrary decision. However having the client always send the first signal
+other. In order to avoid deadlock, the client sends a signal first. This is an
+arbitrary decision. However, having the client always send the first signal
 does not correctly model the behaviour of TCP. This was addressed by having
-additional signals. More specifically, \verb|TIMEOUT| and \verb|IDLE|. This
+additional signals. More specifically: \verb|TIMEOUT| and \verb|IDLE|. This
 way the client will non-deterministically send either a \verb|SEND| where the
 data is either a 0 or 1, a \verb|FIN| to close the connection, or an
 \verb|IDLE| to simulate doing nothing.
 
 When a \textit{proctype} signals a \verb|SEND| the other \textit{proctype}
-will non-deterministically chose between whether to send and \verb|ACK| or to
-simulate a lost packet. Upon a lost packet, in TCP the sender will retransmit
-once a timeout is reached. To simulate this behaviour, the \textit{proctype}
-receiving the data will send a \verb|TIMEOUT| signal to the sender. The sender
-will then retransmit the same data until it receives and \verb|ACK|.
-
-\subsection{Additional Mechanisms}
-
-TODO Any additional mechanisms that you added
-
-I don't think we did.
+will non-deterministically chose between whether to send an \verb|ACK| or to
+simulate a lost packet. In TCP, upon a lost packet the sender will retransmit
+a packet once the timeout is reached. To simulate this behaviour, the
+\textit{proctype} receiving the data will send a \verb|TIMEOUT| signal to
+the sender. The sender will then retransmit the same data until it receives
+an \verb|ACK|.
 
 \section{Verification with Spin}
 
@@ -570,7 +576,7 @@ LTL\_17:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the
 \verb|CLOSE WAIT| state can only go to the \verb|LAST ACK| state.
-Never claim :\\ 
+Never claim :\\
 \begin{lstlisting}
   #define p (sstate == CLOSE_WAIT_STATE)
   #define q (sstate == CLOSE_WAIT_STATE || sstate == LAST_ACK_STATE)
