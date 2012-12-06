@@ -1,10 +1,10 @@
 \documentclass{WigReport}
-\usepackage{epsfig} % so you can include .eps figures 
+\usepackage{epsfig} % so you can include .eps figures
 \usepackage{alltt}  % so you can include program text
-\usepackage{verbatim} 
-\usepackage{listings} 
+\usepackage{verbatim}
+\usepackage{listings}
 \usepackage{color}
-\definecolor{ForestGreen}{rgb}{0.133, 0.545, 0.133} 
+\definecolor{ForestGreen}{rgb}{0.133, 0.545, 0.133}
 \lstset{
 	language=Promela,
 	breaklines=true,
@@ -13,9 +13,9 @@
 	basicstyle=\ttfamily
 }
 \title{Transport Control Protocol Model}
-\ReportNumber{1} 
+\ReportNumber{1}
 \author{Alex Bourgeois (260355141) \\
- Alex Selesse (260374116)} 
+ Alex Selesse (260374116)}
 \begin{document}
 
 \MakeTitlePage
@@ -26,11 +26,20 @@
 
 \section{Introduction}
 
-Our project abides by the protocols mentioned in the project specifications to implement a model of TCP. To mirror the Finite State Machine we have named our \textit{proctypes} as client and server. The communication between these \textit{proctypes} is done with the use of two channels. States are represented as labels in the promela code. The data transmission state was simply modelled with a packet containing one byte which has a value of either 0 or 1.
+Our project abides by the Transport Control Protocol (TCP) as specified in the
+formal project specifications. To mirror the finite state machine, we have
+modeled our \textit{proctypes} as client and server.
+The communication between these \textit{proctypes} is done with the
+use of two channels. States are represented as labels in the Promela code.
+The data transmission state was simply modelled with a packet containing one
+byte which has a value of either 0 or 1.
 
 \section{Specification}
 
-Our TCP model abides by the TCP standard for connection setup and teardown. Our data transmission state has been slightly simplified to adapt to promela.
+Our TCP model abides by the TCP standard for connection setup and teardown. Our
+data transmission state has been slightly simplified to adapt to Promela.
+More information on both the specification and the implementation are found
+later in this report.
 
 \section{Implementation Details}
 
@@ -38,7 +47,7 @@ Our TCP model abides by the TCP standard for connection setup and teardown. Our 
 
 Here are a few the things that need to be modelled:
 \begin{itemize}
-\item Server and client start off as \verb|CLOSED|.
+\item Server and client are initially \verb|CLOSED|.
 \item Server can enter \verb|LISTEN| before/after the client sends \verb|SYN|.
 \item Server's \verb|SYN| is corrupted. Client needs to reset.
 \item Once the connection is established both client and server can send data to the other.
@@ -60,7 +69,7 @@ does not correctly model the behaviour of TCP. This was addressed by having
 additional signals. More specifically: \verb|TIMEOUT| and \verb|IDLE|. This
 way the client will non-deterministically send either a \verb|SEND| where the
 data is either a 0 or 1, a \verb|FIN| to close the connection, or an
-\verb|IDLE| to simulate doing nothing.
+\verb|IDLE| to simulate doing nothing. \\
 
 When a \textit{proctype} signals a \verb|SEND| the other \textit{proctype}
 will non-deterministically chose between whether to send an \verb|ACK| or to
@@ -74,7 +83,7 @@ an \verb|ACK|.
 
 \subsection{Immediate and LTL Assertions}
 
-Immediate assertions were added in multiple places to assert that there are no unwanted signals. Here is the list of immediate assertions:
+Immediate assertions were added in multiple places to assert that there are no unwanted signals. The following immediate assertions are used:
 \\
 
 IMM\_1:\\
@@ -697,11 +706,16 @@ Status: Successfully caught by LTL\_8
 \section{Conclusions}
 
 Promela is a language that is hard to code nicely. For projects like this it
-is very easy to get lost. I made use of labels to try to organize my code
-however that can only do so much. Had this not been the case I would have
-gladly made this model more general and more comprehensive. For example it
-would be nice to model several clients connecting to a server. In addition
-coming up with all these LTL assertions are long and mind-numbing. Having said
-that the project was interesting.
+is very easy to get lost when there's such low support for organizational
+control. We made use of labels to try to organize our code but it can only do
+so much. Had this not been the case we would have
+gladly made this model more general, modular and more comprehensive.
+For example, it would be nice to model several clients connecting to a server.
+In addition coming up with all these LTL assertions are long and mind-numbing.
+Having said that the project was interesting.
+
+With our model, we were able to verify the correctness and the stability of
+the TCP model. We now have a further appreciation for constructing and
+implementing complex systems and verification.
 
 \end{document}
