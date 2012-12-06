@@ -93,21 +93,7 @@ LTL\_1:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|CLOSED| state can only go to the \verb|SYN_SENT| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (cstate == CLOSED_STATE)
-  #define q (cstate == CLOSED_STATE || cstate == SYN_SENT_STATE)
-  never  {    /* ![]<>(p -> Xq) */
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
+TODO\\
 
 LTL\_2:\\
 \begin{verbatim}
@@ -118,21 +104,7 @@ LTL\_2:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|CLOSED| state can only go to the \verb|LISTEN| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (sstate == CLOSED_STATE || sstate == LISTEN_STATE)
-  never  {    /* ![]<>(p -> Xq) */
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
+TODO\\
 
 LTL\_3:\\
 \begin{verbatim}
@@ -143,22 +115,7 @@ LTL\_3:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|SYN SENT| state can only go to the \verb|SYN RCVD| and \verb|ESTABLISHED CONNECTION| states.
 Never claim:\\
-\begin{verbatim}
-  #define p (cstate == SYN_SENT_STATE)
-  #define q (cstate == SYN_SENT_STATE || cstate == SYN_RCVD_STATE || cstate == ESTABLISHED_CONNECTION_STATE)
-  never  {    /* ![]<>(p -> Xq) */
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_4:\\
 \begin{verbatim}
@@ -169,22 +126,7 @@ LTL\_4:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|LISTEN| state can only go to the \verb|SYN RCVD| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (sstate == LISTEN_STATE || sstate == SYN_RCVD_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_5:\\
 \begin{verbatim}
@@ -195,22 +137,7 @@ LTL\_5:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|SYN SENT| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (cstate == SYN_RCVD_STATE || cstate == SYN_SENT_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_6:\\
 \begin{verbatim}
@@ -221,22 +148,7 @@ LTL\_6:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|SYN RCVD| state can only go to the \verb|LISTEN| and \verb|ESTABLISHED CONNECTION| states.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (sstate == SYN_RCVD_STATE || sstate == LISTEN_STATE || sstate == ESTABLISHED_CONNECTION_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_7:\\
 \begin{verbatim}
@@ -247,22 +159,7 @@ LTL\_7:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|ESTABLISHED CONNECTION| state can only go to the \verb|FIN WAIT 1| and \verb|CLOSE WAIT| states.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (cstate == ESTABLISHED_CONNECTION_STATE || cstate == FIN_WAIT_1_STATE || cstate == CLOSE_WAIT_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_8:\\
 \begin{verbatim}
@@ -273,22 +170,7 @@ LTL\_8:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|ESTABLISHED CONNECTION| state can only go to the \verb|FIN WAIT 1| and \verb|CLOSE WAIT| states.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (sstate == ESTABLISHED_CONNECTION_STATE || sstate == FIN_WAIT_1_STATE || sstate == CLOSE_WAIT_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_9:\\
 \begin{verbatim}
@@ -299,22 +181,7 @@ LTL\_9:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (cstate == FIN_WAIT_1_STATE || cstate == FIN_WAIT_2_STATE || cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_10:\\
 \begin{verbatim}
@@ -325,22 +192,7 @@ LTL\_10:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 1| state can only go to the \verb|FIN WAIT 2|, \verb|CLOSING|, and \verb|TIME WAIT| states.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (sstate == FIN_WAIT_1_STATE || sstate == FIN_WAIT_2_STATE || sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_11:\\
 \begin{verbatim}
@@ -351,22 +203,7 @@ LTL\_11:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (cstate == FIN_WAIT_2_STATE || cstate == TIME_WAIT_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_12:\\
 \begin{verbatim}
@@ -377,22 +214,7 @@ LTL\_12:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|FIN WAIT 2| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (sstate == FIN_WAIT_2_STATE || sstate == TIME_WAIT_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_12:\\
 \begin{verbatim}
@@ -403,22 +225,7 @@ LTL\_12:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|CLOSING| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (cstate == CLOSING_STATE || cstate == TIME_WAIT_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_13:\\
 \begin{verbatim}
@@ -429,22 +236,7 @@ LTL\_13:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|CLOSING| state can only go to the \verb|TIME WAIT| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (sstate == CLOSING_STATE || sstate == TIME_WAIT_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_14:\\
 \begin{verbatim}
@@ -455,22 +247,7 @@ LTL\_14:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|TIME WAIT| state can only go to the \verb|CLOSED| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (cstate == TIME_WAIT_STATE || cstate == CLOSED_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_15:\\
 \begin{verbatim}
@@ -481,22 +258,7 @@ LTL\_15:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|TIME WAIT| state can only go to the \verb|CLOSED| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (sstate == TIME_WAIT_STATE || sstate == CLOSED_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_16:\\
 \begin{verbatim}
@@ -507,22 +269,7 @@ LTL\_16:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|CLOSE WAIT| state can only go to the \verb|LAST ACK| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (cstate == CLOSE_WAIT_STATE || cstate == LAST_ACK_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_17:\\
 \begin{verbatim}
@@ -533,22 +280,7 @@ LTL\_17:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|CLOSE WAIT| state can only go to the \verb|LAST ACK| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (sstate == CLOSE_WAIT_STATE || sstate == LAST_ACK_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_18:\\
 \begin{verbatim}
@@ -559,22 +291,7 @@ LTL\_18:\\
 Description:\\
 This assertion makes sure that the client \textit{proctype} from the \verb|LAST ACK| state can only go to the \verb|CLOSED| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == CLOSED_STATE)
-  #define q (cstate == LAST_ACK_STATE || cstate == CLOSED_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 LTL\_19:\\
 \begin{verbatim}
@@ -585,22 +302,7 @@ LTL\_19:\\
 Description:\\
 This assertion makes sure that the server \textit{proctype} from the \verb|LAST ACK| state can only go to the \verb|CLOSED| state.
 Never claim:\\
-\begin{verbatim}
-  #define p (sstate == LAST_ACK_STATE)
-  #define q (sstate == LAST_ACK_STATE || sstate == CLOSED_STATE)
-  ![]<>(p -> Xq)
-  T0_init:
-    if
-    :: ((p)) -> goto accept_S4
-    :: (1) -> goto T0_init
-    fi;
-  accept_S4:
-    if
-    :: (! ((q)) && (p)) -> goto accept_S4
-    fi;
-  }
-\end{verbatim}
-
+TODO\\
 
 \section{Mutation Testing}
 
@@ -610,6 +312,66 @@ For each mutant / fault:
 ∗ Describe the intended incorrect behaviour that your TCP protocol should generate, and indicate the location (in terms of line number) of the mutant 6
 ∗ Which assertion should catch the incorrect behaviour? Indicate the assertion based on the label number (E.g., “...MUTANT\_05 was caught by assertion LTL\_47...”
 ∗ Did the assertion (immediate or LTL) was able to detect the incorrect behaviour? If not, can you suggest another immediate or LTL assertion to add?
+
+MUTANT\_1 (line 227):\\
+Description:\\
+When the client sends data to the server, the server signals with a \verb|SYN| instead of a \verb|TIMEOUT|.\\
+Status: Successfully caught by IMM\_1
+\\
+
+MUTANT\_2 (line 261):\\
+Description:\\
+When the server sends data to the client, the server checks for a \verb|SYN| signal instead of a \verb|TIMEOUT| signal. This means that it does not timeout correctly.
+Status: Successfully caught by IMM\_1
+\\
+
+MUTANT\_3 (line 235):\\
+Description:\\
+When the server attempts to initiate a closing sequence it sends a \verb|SYN| signal instead of a \verb|FIN| signal.
+Status: Successfully caught by IMM\_2
+\\
+
+MUTANT\_4 (line 256):\\
+Description:\\
+When the server has sent data it breaks out of the loop.
+Status: Successfully caught by IMM\_3
+\\
+
+MUTANT\_5 (line 25):\\
+Description:\\
+The client enters the \verb|CLOSING| state instead of re-entering the \verb|CLOSED| state.
+Status: Successfully caught by LTL\_1
+\\
+
+MUTANT\_6 (line 43):\\
+Description:\\
+The client enters the \verb|FIN WAIT 1| state instead of the \verb|SYN_RCVD| state.
+Status: Successfully caught by LTL\_3
+\\
+
+MUTANT\_7 (line 83):\\
+Description:\\
+The client enters the \verb|CLOSED| state instead of the \verb|FIN WAIT 1| state.
+Status: Successfully caught by LTL\_7
+\\
+
+MUTANT\_8 (line 282):\\
+Description:\\
+The server enters the \verb|CLOSED| state instead of the \verb|CLOSING| state.
+Status: Successfully caught by LTL\_10
+\\
+
+MUTANT\_9 (line 293):\\
+Description:\\
+The server enters the \verb|CLOSED| state instead of the \verb|TIME WAIT| state.
+Status: Successfully caught by LTL\_13
+\\
+
+MUTANT\_10 (line 242):\\
+Description:\\
+The server enters the \verb|FIN WAIT 2| state instead of the \verb|FIN WAIT 1| state.
+Status: Successfully caught by LTL\_8
+\\
 
 \section{Conclusions}
 

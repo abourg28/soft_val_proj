@@ -22,7 +22,7 @@ proctype client(int x) {
     toServer!SYN;
     goto SYN_SENT;
   :: /* do nothing */
-    goto CLOSED;
+    goto CLOSED; /* MUTANT_5: Replace goto CLOSED with goto CLOSING*/
   fi;
 
   SYN_SENT:
@@ -40,7 +40,7 @@ proctype client(int x) {
   :: else ->
     /* The wrong Ack was received */
     printf("CLIENT: Received incorrect SYN\n");
-    goto SYN_RCVD;
+    goto SYN_RCVD; /* MUTANT_6: Replace goto SYN_RCVD with goto FIN_WAIT_1 */
   fi;
 
   SYN_RCVD:
@@ -80,7 +80,7 @@ proctype client(int x) {
       :: /* Start closing sequence */
         printf("CLIENT: Starting closing sequence\n");
         toServer!FIN;
-        goto FIN_WAIT_1;
+        goto FIN_WAIT_1; /* MUTANT_7: Replace goto FIN_WAIT_1 with goto CLOSED */
       :: /* Send data */
         if
         :: data = 0;
@@ -146,8 +146,7 @@ proctype client(int x) {
   printf("CLIENT: TIME WAIT\n");
   /* Wait for all packets to terminate? */
   toServer!ACK;
-  /* Should be goto CLOSED; */
-  goto FINISHED;
+  goto FINISHED; /* Change to FINISHED if you want the model to stop */
 
   CLOSE_WAIT:
   cstate = CLOSE_WAIT_STATE;
@@ -159,8 +158,7 @@ proctype client(int x) {
   cstate = LAST_ACK_STATE;
   printf("CLIENT: LAST ACK\n");
   toClient?ACK;
-  /* Should be goto CLOSED; */
-  goto FINISHED;
+  goto CLOSED; /* Change to FINISHED if you want the model to stop */
 
   FINISHED:
   cstate = CLOSED_STATE;
@@ -224,7 +222,7 @@ proctype server(int y) {
       if
       :: /* Simulate lost packet */
         printf("SERVER: Simulating lost packet\n");
-        toClient!TIMEOUT;
+        toClient!TIMEOUT; /* MUTANT_1: Replace with toClient!SYN */
       :: /* Read packet */
         printf("SERVER: Received data %d\n", data);
         toClient!ACK;
@@ -232,7 +230,7 @@ proctype server(int y) {
     :: (sig == FIN) ->
       /* Client wants to close connection */
       printf("SERVER: Client initiated closing sequence\n");
-      toClient!ACK;
+      toClient!ACK; /* MUTANT_3: Replace with toClient!SYN */
       goto CLOSE_WAIT;
     :: (sig == IDLE) ->
       if
@@ -241,7 +239,7 @@ proctype server(int y) {
       :: /* Start closing sequence */
         printf("SERVER: Starting closing sequence\n");
         toClient!FIN;
-        goto FIN_WAIT_1;
+        goto FIN_WAIT_1; /* MUTANT_10: Replace goto FIN_WAIT_1 with goto FIN_WAIT_2 */
       :: /* Send data */
         if
         :: data = 0;
@@ -253,12 +251,13 @@ proctype server(int y) {
         toClient!SEND;
         printf("SERVER: Waiting...\n");
         toServer?sig;
+        /* MUTANT_4: Uncomment, break; */
         if
         :: (sig == ACK) ->
           /* Data packet was successfully received */
           printf("SERVER: Data ACK was received from client\n");
           toClient!IDLE;
-        :: (sig == TIMEOUT) ->
+        :: (sig == TIMEOUT) -> /* MUTANT_2: Replace condition with sig == SYN */
           /* Timeout, must retransmit data */
           printf("SERVER: Timeout, retransmitting data.\n");
           goto TRANSMIT;
@@ -280,7 +279,7 @@ proctype server(int y) {
   :: (sig == FIN) ->
     /* Both sides have tried to close the connection */
     toClient!ACK;
-    goto CLOSING;
+    goto CLOSING; /* MUTANT_8: Replace goto CLOSING with goto CLOSED */
   :: (sig == ACK) ->
     /* Server received close request */
     goto  FIN_WAIT_2;
@@ -291,7 +290,7 @@ proctype server(int y) {
   sstate = CLOSING_STATE;
   printf("SERVER: CLOSING\n");
   toServer?ACK;
-  goto TIME_WAIT;
+  goto TIME_WAIT; /* MUTANT_9: Replace goto TIME_WAIT with goto CLOSED */
 
   FIN_WAIT_2:
   sstate = FIN_WAIT_2_STATE;
@@ -305,8 +304,7 @@ proctype server(int y) {
   printf("SERVER: TIME WAIT\n");
   /* Wait for all packets to terminate? */
   toClient!ACK;
-  /* Should be goto CLOSED; */
-  goto FINISHED;
+  goto CLOSED; /* Change to FINISHED if you want the model to stop */
 
   CLOSE_WAIT:
   sstate = CLOSE_WAIT_STATE;
@@ -318,8 +316,7 @@ proctype server(int y) {
   sstate = LAST_ACK_STATE;
   printf("SERVER: LAST ACK\n");
   toServer?ACK;
-  /* Should be goto CLOSED; */
-  goto FINISHED;
+  goto CLOSED; /* Change to FINISHED if you want the model to stop */
 
   FINISHED:
   sstate = CLOSED_STATE;
